@@ -40,9 +40,19 @@ namespace Tamagotchi.Controllers
         public Pet PlayWithPet (int id)
         {
             var play = db.Pets.FirstOrDefault(p => p.Id == id);
-            play.HappinessLevel = play.HappinessLevel + 5;
-            play.HungerLevel = play.HungerLevel + 3;
-            db.SaveChanges();
+            var suddendeath = SuddenDeath();
+            if (suddendeath == true)
+            {
+                play.IsDead = true;
+                play.DeathDate = DateTime.Now;
+                db.SaveChanges();
+            }
+            else if (suddendeath == false)
+            {
+                play.HappinessLevel = play.HappinessLevel + 5;
+                play.HungerLevel = play.HungerLevel + 3;
+                db.SaveChanges();
+            }
             return play;
         }
 
@@ -50,9 +60,19 @@ namespace Tamagotchi.Controllers
         public Pet FeedPet (int id)
         {
             var feed = db.Pets.FirstOrDefault(p => p.Id == id);
-            feed.HappinessLevel = feed.HappinessLevel + 3;
-            feed.HungerLevel = feed.HungerLevel - 5;
-            db.SaveChanges();
+            var suddendeath = SuddenDeath();
+            if (suddendeath == true)
+            {
+                feed.IsDead = true;
+                feed.DeathDate = DateTime.Now;
+                db.SaveChanges();
+            }
+            else if (suddendeath == false)
+            {
+                feed.HappinessLevel = feed.HappinessLevel + 3;
+                feed.HungerLevel = feed.HungerLevel - 5;
+                db.SaveChanges();
+            }
             return feed; 
         }
 
@@ -60,8 +80,18 @@ namespace Tamagotchi.Controllers
         public Pet ScoldPet (int id)
         {
             var scold = db.Pets.FirstOrDefault(p => p.Id == id);
-            scold.HappinessLevel = scold.HappinessLevel - 5;
-            db.SaveChanges();
+            var suddendeath = SuddenDeath();
+            if (suddendeath == true)
+            {
+                scold.IsDead = true;
+                scold.DeathDate = DateTime.Now;
+                db.SaveChanges();
+            }
+            else if (suddendeath == false)
+            {
+                scold.HappinessLevel = scold.HappinessLevel - 5;
+                db.SaveChanges();
+            }
             return scold; 
         }
 
@@ -76,6 +106,17 @@ namespace Tamagotchi.Controllers
             db.Pets.Remove(abandon);
             db.SaveChanges();
             return Ok(); 
+        }
+          public bool SuddenDeath()
+        {
+            var killed = false;
+            var random = new Random();
+            var dead = random.Next(1,101);
+            if (dead <= 10)
+            {
+                killed = true;
+            }
+                return killed;
         }
     }
 }
