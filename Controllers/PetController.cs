@@ -17,14 +17,23 @@ namespace Tamagotchi.Controllers
         [HttpGet]
         public List<Pet> GetAllPets()
         {
-            var pets = db.Pets.OrderBy(p => p.Name);
+            var pets = db.Pets.OrderBy(p => p.Id);
             return pets.ToList();
+        }
+
+        [HttpGet("alive")]
+        public List<Pet> ViewAlive()
+        {
+            var allPets = db.Pets.Where(p => p.IsDead == false);
+            var alive = allPets.OrderBy(p => p.Id);
+            return alive.ToList();
         }
 
         [HttpGet("{id}")]
         public Pet GetOnePet(int id)
         {
             var pet = db.Pets.FirstOrDefault(p => p.Id == id);
+            InteractUpdate(pet);
             return pet;
         }
 
@@ -53,6 +62,7 @@ namespace Tamagotchi.Controllers
                 play.HungerLevel = play.HungerLevel + 3;
                 db.SaveChanges();
             }
+            InteractUpdate(play);
             return play;
         }
 
@@ -73,6 +83,7 @@ namespace Tamagotchi.Controllers
                 feed.HungerLevel = feed.HungerLevel - 5;
                 db.SaveChanges();
             }
+            InteractUpdate(feed);
             return feed; 
         }
 
@@ -92,6 +103,7 @@ namespace Tamagotchi.Controllers
                 scold.HappinessLevel = scold.HappinessLevel - 5;
                 db.SaveChanges();
             }
+            InteractUpdate(scold);
             return scold; 
         }
 
@@ -118,5 +130,11 @@ namespace Tamagotchi.Controllers
             }
                 return killed;
         }
+        public void InteractUpdate(Pet pet)
+        {
+            pet.LastInteractedWithDate = DateTime.Now;
+            db.SaveChanges();
+        }
+        
     }
 }
