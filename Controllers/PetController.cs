@@ -17,6 +17,7 @@ namespace Tamagotchi.Controllers
         [HttpGet]
         public List<Pet> GetAllPets()
         {
+            InteractUpdateAll();
             var pets = db.Pets.OrderBy(p => p.Id);
             return pets.ToList();
         }
@@ -24,6 +25,7 @@ namespace Tamagotchi.Controllers
         [HttpGet("alive")]
         public List<Pet> ViewAlive()
         {
+            InteractUpdateAll();
             var allPets = db.Pets.Where(p => p.IsDead == false);
             var alive = allPets.OrderBy(p => p.Id);
             return alive.ToList();
@@ -135,6 +137,16 @@ namespace Tamagotchi.Controllers
             pet.LastInteractedWithDate = DateTime.Now;
             db.SaveChanges();
         }
-        
+        public void InteractUpdateAll()
+        {
+            var updateAll = db.Pets.OrderBy(p => p.Id);
+            foreach (var pet in updateAll)
+            {
+                pet.LastInteractedWithDate = DateTime.Now;
+            }
+            db.SaveChanges();
+        }
+        // public void NeglectedPet (List<Pet> pets)
+
     }
 }
